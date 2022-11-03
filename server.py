@@ -5,6 +5,7 @@ from enemy import Enemy
 from effects import *
 from cargo import Cargo
 import json
+from random import randint
 
 pygame.init()
 
@@ -21,10 +22,9 @@ for i in range(number_client):
   print ('Got connection from', dict_client['addr'+str(i)])
 
 dict_game = {"players": {}}
-for i in range(number_client): dict_game['players']['player'+str(i)] = {"life": 100, "coo": (100,100), "bullets": [],"rockets": []}
+for i in range(number_client): dict_game['players']['player'+str(i)] = {"life": 100, "coo": (100,100), "bullets": [],"rockets": [], "enemys": []}
 dict_game['cargo_life'] = 500
 dict_game['nuages'] = []
-dict_game['enemys'] = []
 
 for i in range(number_client):
   msg = str(i)+','+str(number_client)
@@ -49,8 +49,14 @@ while running:
     dict_game['players']['player'+str(i)]["coo"] = new_dict_game['players']['player'+str(i)]["coo"]
     dict_game['players']['player'+str(i)]["bullets"] = new_dict_game['players']['player'+str(i)]["bullets"]
     dict_game['players']['player'+str(i)]["rockets"] = new_dict_game['players']['player'+str(i)]["rockets"]
+    dict_game['players']['player'+str(i)]["enemys"] = new_dict_game['players']['player'+str(i)]["enemys"]
     damage_cargo += dict_game['cargo_life']-new_dict_game['cargo_life']
   dict_game['cargo_life'] -= damage_cargo
+
+  if randint(0,20) == 0:
+      pn = str(randint(0,number_client-1))
+      if len(dict_game['players']['player'+pn]["enemys"]) < 5:
+          dict_game['players']['player'+pn]["enemys"].append({"life":10,"coo":(1200,randint(0,675)),"spawned":False})
 
   dict_game_se = json.dumps(dict_game)
   for i in range(number_client):

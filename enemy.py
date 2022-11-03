@@ -1,6 +1,5 @@
 import pygame
 from random import randint
-from gun import Machine_gun
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,game):
@@ -18,7 +17,6 @@ class Enemy(pygame.sprite.Sprite):
         self.game = game
         self.damage = 5
         self.life = 10
-        self.machine_gun = Machine_gun(self)
 
     def move(self,player):
         x=(self.rect.x - player.rect.x)/40
@@ -44,3 +42,19 @@ class Enemy(pygame.sprite.Sprite):
 
     def get_damage(self):
         return self.damage
+
+    def get_life(self):
+        return self.life
+
+class Enemy_ally(pygame.sprite.Sprite):
+    def __init__(self,x,y,life):
+        super().__init__()
+        self.image = pygame.image.load("assets/enemy/enemy1/enemy-001.png")
+        self.image = pygame.transform.scale(self.image,(80,80))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.life = life
+
+    def draw(self,screen):
+        screen.blit(self.image,self.rect)

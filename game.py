@@ -1,11 +1,11 @@
 from distutils.dep_util import newer_group
 import pygame
 from player import Player
-from enemy import Enemy
 from effects import *
 from random import randint
 from cargo import Cargo
 from projectile import *
+from enemy import *
 import json
 
 class Game:
@@ -15,7 +15,7 @@ class Game:
         self.all_enemy = pygame.sprite.Group()
         self.all_effect = pygame.sprite.Group()
         self.pressed = {}
-    
+
     def spawn_enemy(self,r):
         if randint(0,r) == 1 and len(self.all_enemy) < 11:
             self.all_enemy.add(Enemy(self))
@@ -75,7 +75,7 @@ class Game:
 
     def clear_effect(self):
         self.all_effect = pygame.sprite.Group()
-                
+
     def game_update(self,screen,clock):
         #update des effets
         self.update_effect(screen)
@@ -90,7 +90,7 @@ class Game:
 
         #spawn des enemy
         self.spawn_enemy(60)
-        
+
         #update des enemy
         for enemy in self.all_enemy:
             self.all_enemy.draw(screen)
@@ -121,6 +121,12 @@ class Game_Online:
         for effect in self.all_effect:
             effect.animation()
         self.all_effect.draw(screen)
+
+    def remove_enemy(self,en):
+        self.all_enemy.remove(en)
+
+    def spawn_enemy(self):
+        self.all_enemy.add(Enemy(self))
 
     def explosion(self,x,y):
         self.all_effect.add(Explosion(self,x,y))
@@ -166,19 +172,33 @@ class Game_Online:
     def game_update(self,screen,clock,list_ally,player_number,dict_game):
         #update du cargo
         self.cargo.draw(screen,self.player)
+        if self.cargo.rect.y < -95:
+            dict_game["cargo_life"] = self.cargo.init_life
         self.cargo.life = dict_game["cargo_life"]
 
         #update des effets
         self.update_effect(screen)
 
+        #collision
         self.collision()
+
+        #spawn des enemy
+        for enemy in dict_game["players"]["player"+player_number]["enemys"]:
+            if not enemy['spawned']:
+                self.spawn_enemy()
+        #update des enemy
+        for enemy in self.all_enemy:
+            self.all_enemy.draw(screen)
+            enemy.move(self.player)
 
         #update du joueur
         self.player.hud(self,screen,clock)
         self.player.draw(screen)
 
+        #update des objets des autres joueurs
         bullet_ally = pygame.sprite.Group()
         rocket_ally = pygame.sprite.Group()
+        enemy_ally = pygame.sprite.Group()
 
         for i in range(len(list_ally)):
             if i != int(player_number):
@@ -189,11 +209,15 @@ class Game_Online:
                     bullet_ally.add(Bullet_ally(ib[0],ib[1]))
                 for ir in dict_game['players']['player'+str(i)]['rockets']:
                     rocket_ally.add(Rocket_ally(ir[0],ir[1]))
+                for ie in dict_game['players']['player'+str(i)]['enemys']:
+                    enemy_ally.add(Enemy_ally(ie["coo"][0],ie["coo"][1],ie["life"]))
 
         for bullet in bullet_ally:
             bullet.draw(screen)
         for rocket in rocket_ally:
             rocket.draw(screen)
+        for enemy in enemy_ally:
+            enemy.draw(screen)
 
         #gestion des touches
         if self.pressed.get(pygame.K_UP): # move key
@@ -210,12 +234,16 @@ class Game_Online:
         bl = []
         for bullet in self.player.machine_gun.all_bullet:
             bl.append((bullet.rect.x,bullet.rect.y))
-        dict_game['players']['player'+str(player_number)]["bullets"] = bl
+        dict_game['players']['player'+player_number]["bullets"] = bl
         rl = []
         for rocket in self.player.rocket_launcher.all_rocket:
             rl.append((rocket.rect.x,rocket.rect.y))
-        dict_game['players']['player'+str(player_number)]["rockets"] = rl
+        dict_game['players']['player'+player_number]["rockets"] = rl
         dict_game["cargo_life"] = self.cargo.get_life()
+        el = []
+        for enemy in self.all_enemy:
+            el.append({"life": enemy.get_life(), "coo": (enemy.rect.x,enemy.rect.y), "spawned": True})
+        dict_game["players"]['player'+player_number]["enemys"] = el
 
         dict_game["players"]["player"+player_number]["coo"] = (self.player.rect.x,self.player.rect.y)
         return json.dumps(dict_game)

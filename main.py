@@ -65,7 +65,7 @@ def menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-            if event.type == pygame.KEYDOWN:        
+            if event.type == pygame.KEYDOWN:
                 if online_addr_select:
                     if event.key == pygame.K_RETURN:
                         print(text)
@@ -170,7 +170,7 @@ def online_game(addr):
     bg_x = 0
 
     msg = server.recv(1024).decode()
-    print(msg)
+    print("matricule du client: "+msg)
     player_number = msg.split(',')[0]
     n_of_player = msg.split(',')[1]
     server.send(valid.encode())

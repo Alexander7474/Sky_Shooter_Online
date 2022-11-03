@@ -44,6 +44,6 @@ class Cargo(pygame.sprite.Sprite):
 
     def damage(self,damage):
         self.life -= damage
-    
+
     def get_life(self):
         return self.life
