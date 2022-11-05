@@ -6,20 +6,20 @@ class Cargo(pygame.sprite.Sprite):
     def __init__(self,game):
         super().__init__()
         self.image = pygame.image.load("assets/cargo/cargo_1.png")
-        self.w, self.h = pygame.display.get_surface().get_size()
-        self.image = pygame.transform.scale(self.image,(((237*2)/1200)*self.w,((92*2)/675)*self.h))
+        self.screen_x, self.screen_y = pygame.display.get_surface().get_size()
+        self.image = pygame.transform.scale(self.image,((474/1280)*self.screen_x,(184/720)*self.screen_y))
         self.rect = self.image.get_rect()
-        self.rect.x = 690
-        self.rect.y = -100
+        self.rect.x = self.screen_x - (550/1280)*self.screen_x
+        self.rect.y = (-100/720)*self.screen_y
         self.init_life = 500
         self.life = 500
-        self.way = "down"
+        self.direction = "down"
         self.game = game
         self.machine_gun = Cargo_machine_gun(self)
 
     def respawn(self):
         self.image = pygame.image.load("assets/cargo/cargo_1.png")
-        self.image = pygame.transform.scale(self.image,(((237*2)/1200)*self.w,((92*2)/675)*self.h))
+        self.image = pygame.transform.scale(self.image,((474/1280)*self.screen_x,(184/720)*self.screen_y))
         self.rect.y = -100
         self.life = int(self.init_life * 1.25)
         self.init_life = self.life
@@ -30,16 +30,16 @@ class Cargo(pygame.sprite.Sprite):
         """dessine le cargo"""
         if self.life > 0:
             self.machine_gun.draw(screen,self,player)
-            if self.way == "down":   self.rect.y += 1
-            if self.way == "up": self.rect.y -= 1
-            if self.rect.y > 300:  self.way = "up"
-            if self.rect.y < 200:  self.way = "down"
+            if self.direction == "down":   self.rect.y += 1
+            if self.direction == "up": self.rect.y -= 1
+            if self.rect.y > self.screen_y//1.8:  self.direction = "up"
+            if self.rect.y < self.screen_y//3.5:  self.direction = "down"
         else:
             self.image = pygame.image.load("assets/cargo/cargo_1_down.png")
-            self.image = pygame.transform.scale(self.image,(((237*2)/1200)*self.w,((92*2)/675)*self.h))
+            self.image = pygame.transform.scale(self.image,((474/1280)*self.screen_x,(184/720)*self.screen_y))
             self.rect.y += 2
-            self.game.explosion(self.rect.x+randint(0,((237*2)/1200)*self.w),self.rect.y+randint(0,((92*2)/675)*self.h))
-        if self.rect.y >= 750:
+            self.game.explosion(self.rect.x+randint(0,int((474/1280)*self.screen_x)),self.rect.y+randint(0,int((184/720)*self.screen_y)))
+        if self.rect.y >= self.screen_y+(200/720)*self.screen_y:
             self.respawn()
 
     def damage(self,damage):

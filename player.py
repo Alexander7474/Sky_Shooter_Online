@@ -7,12 +7,12 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("assets/mainShip/PNGs/ship.png")
-        w, h = pygame.display.get_surface().get_size()
-        self.image = pygame.transform.scale(self.image,((100/1200)*w,(100/675)*h))
+        self.screen_x, self.screen_y = pygame.display.get_surface().get_size()
+        self.image = pygame.transform.scale(self.image,((100/1280)*self.screen_x,(100/720)*self.screen_y))
         self.rect = self.image.get_rect()
-        self.rect.x = 200
-        self.rect.y = 100
-        self.speed = 5
+        self.rect.x = self.screen_x//4
+        self.rect.y = self.screen_y//2
+        self.speed = (5/1280)*self.screen_x
         self.life = 100
         self.score = 0
         self.rocket_launcher = Rocket_launcher(self)
@@ -22,15 +22,15 @@ class Player(pygame.sprite.Sprite):
 
     def move(self,direct):
         #deplacement du joueur
-        if self.rect.x > -50:
+        if self.rect.x > (-50/1280)*self.screen_x:
             if direct == "left": self.rect.x -= self.speed
-        if self.rect.x < 1150:
+        if self.rect.x < self.screen_x+(80/1280)+self.screen_x:
             if direct == "right": self.rect.x += self.speed
         if direct == "up": self.rect.y -= self.speed
         if direct == "down": self.rect.y += self.speed
         #deplacement de l'autre cote de la fenetre sui depassement
-        if self.rect.y < -50: self.rect.y = 625
-        if self.rect.y > 625: self.rect.y = -50
+        if self.rect.y < (-80/720)*self.screen_y: self.rect.y = self.screen_y-(-20/720)*self.screen_y
+        if self.rect.y > self.screen_y-(-20/720)*self.screen_y: self.rect.y = (-80/720)*self.screen_y
 
     def get_projectile(self,type):
         if type == "rocket":
@@ -55,21 +55,21 @@ class Player(pygame.sprite.Sprite):
         self.draw_projectile(screen)
 
     def hud(self,game,screen,clock):
-        text_life = self.font.render(str("life:" + str(self.life)), False, (255, 255, 255))
-        screen.blit(text_life, (0,635))
-        text_score = self.font.render(str("score:" + str(self.score)), False, (255, 255, 255))
-        screen.blit(text_score, (1000,635))
+        text_life = self.font.render(str("Life:" + str(self.life)), False, (255, 255, 255))
+        screen.blit(text_life, (0,self.screen_y-20))
+        text_score = self.font.render(str("Score:" + str(self.score)), False, (255, 255, 255))
+        screen.blit(text_score, (self.screen_x-200,self.screen_y-20))
         if self.rocket_launcher.get_timer() == 0:
-            pygame.draw.circle(screen,(0,255,0),(15,615), 10, 0)
+            pygame.draw.circle(screen,(0,255,0),(10,self.screen_y-40), 10, 0)
         else:
             if self.rocket_launcher.get_timer() <= 255:
-                pygame.draw.circle(screen,(255,self.rocket_launcher.get_timer(),0),(15,615), 10, 0)
+                pygame.draw.circle(screen,(255,self.rocket_launcher.get_timer(),0),(10,self.screen_y-40), 10, 0)
             else:
                 self.rocket_launcher.rearms()
         text_fps = self.font.render(str(round(clock.get_fps(),1)), False,(255,255,255))
         screen.blit(text_fps,(0,0))
-        text_cargo_life = self.font.render(str(game.cargo.get_life()), False, (255,255,255))
-        screen.blit(text_cargo_life,(1000,450))
+        text_cargo_life = self.font.render("Cargo life:"+str(game.cargo.get_life()), False, (255,255,255))
+        screen.blit(text_cargo_life,(self.screen_x-200,self.screen_y-40))
 
     def get_life(self):
         return self.life
@@ -79,3 +79,6 @@ class Player(pygame.sprite.Sprite):
 
     def add_score(self,add):
         self.score+=add
+
+    def get_score(self):
+        return self.score

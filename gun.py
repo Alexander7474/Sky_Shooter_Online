@@ -10,8 +10,8 @@ class Rocket_launcher(pygame.sprite.Sprite):
         for i in range(17):
             if i < 10: img = pygame.image.load("assets/MainShipWeapon/PNGs/missile-launcher/tile00"+str(i)+".png")
             else: img = pygame.image.load("assets/MainShipWeapon/PNGs/missile-launcher/tile0"+str(i)+".png")
-            w, h = pygame.display.get_surface().get_size()
-            img = pygame.transform.scale(img,((100/1200)*w,(100/675)*h))
+            screen_x, screen_y = pygame.display.get_surface().get_size()
+            img = pygame.transform.scale(img,((100/1280)*screen_x,(100/720)*screen_y))
             self.image_list.append(img)
         self.image = self.image_list[0]
         self.all_rocket = pygame.sprite.Group()
@@ -55,7 +55,7 @@ class Rocket_launcher(pygame.sprite.Sprite):
 
     def get_state(self):
         return self.launch_state
-    
+
     def get_timer(self):
         return self.timer
 
@@ -68,21 +68,24 @@ class Machine_gun(pygame.sprite.Sprite):
         self.image_list = []
         for i in range(7):
             img = pygame.image.load("assets/MainShipWeapon/PNGs/machine-gun/tile00"+str(i)+".png")
-            w, h = pygame.display.get_surface().get_size()
-            img = pygame.transform.scale(img,((100/1200)*w,(100/675)*h))
+            screen_x, screen_y = pygame.display.get_surface().get_size()
+            img = pygame.transform.scale(img,((100/1280)*screen_x,(100/720)*screen_y))
             self.image_list.append(img)
         self.image = self.image_list[0]
         self.all_bullet = pygame.sprite.Group()
         self.rect = self.image.get_rect()
         self.rect.x = player.rect.x
         self.rect.y = player.rect.y
+        self.sound = pygame.mixer.Sound("assets/song_effect/gunshot/bullet_shot.mp3")
         self.time = 0
 
     def fire(self):
         if self.time == 1:
             self.all_bullet.add(Bullet(self,"left"))
+            self.sound.play()
         if self.time == 2:
             self.all_bullet.add(Bullet(self,"right"))
+            self.sound.play()
         t_n = self.time%7
         self.image = self.image_list[t_n]
         if self.time > 6:
@@ -104,8 +107,8 @@ class Cargo_machine_gun(pygame.sprite.Sprite):
     def __init__(self,cargo):
         super().__init__()
         self.image = pygame.image.load("assets/cargo/gun/machine_gun.png")
-        self.w, self.h = pygame.display.get_surface().get_size()
-        self.image = pygame.transform.scale(self.image,(((13*2)/1200)*self.w,((13*2)/675)*self.h))
+        self.screen_x, self.screen_y = pygame.display.get_surface().get_size()
+        self.image = pygame.transform.scale(self.image,(((13*2)/1280)*self.screen_x,((13*2)/720)*self.screen_y))
         self.rect = self.image.get_rect()
         self.rect.x = cargo.rect.x
         self.rect.y = cargo.rect.y
@@ -115,6 +118,8 @@ class Cargo_machine_gun(pygame.sprite.Sprite):
         self.all_bullet = pygame.sprite.Group()
         self.shoot_time = randint(80,280)
         self.time = 0
+        self.brrrt1 = pygame.mixer.Sound("assets/song_effect/gunshot/brrrt1.mp3")
+        self.brrrt2 = pygame.mixer.Sound("assets/song_effect/gunshot/brrrt2.mp3")
 
     def draw_projectiles(self,screen):
         """dessine les projectiles des guns cargo"""
@@ -124,8 +129,11 @@ class Cargo_machine_gun(pygame.sprite.Sprite):
 
     def draw(self,screen,cargo,player):
         """met a jour le machine gun du cargo puis le dessine"""
+        if self.time == self.shoot_time-40:
+            if randint(0,1) == 0:self.brrrt1.play()
+            else:self.brrrt2.play()
         if self.time >= self.shoot_time-40:
-            self.shoot(player)
+            self.fire(player)
         if self.time >= self.shoot_time:
             self.time = 0;self.shoot_time = randint(80,280)
         self.draw_projectiles(screen)
@@ -138,15 +146,15 @@ class Cargo_machine_gun(pygame.sprite.Sprite):
             elif y < 0:
                 arctan = 90-math.degrees(math.atan(x/y))
                 self.image = self.image_list[180-int(arctan)]
-        self.rect.x = cargo.rect.x +((67/1200)*self.w)
-        self.rect.y = cargo.rect.y +((132/675)*self.h)
+        self.rect.x = cargo.rect.x +((65/1280)*self.screen_x)
+        self.rect.y = cargo.rect.y +((132/720)*self.screen_y)
         screen.blit(self.image,self.rect)
         self.time+=1
 
     def get_bullet(self):
         return self.all_bullet
-    
-    def shoot(self,player):
+
+    def fire(self,player):
         """tirer en direction d'un joueur"""
         if player.rect.x < self.rect.x-10:
             self.all_bullet.add(Bullet_cargo(self,player.rect.x,player.rect.y))
