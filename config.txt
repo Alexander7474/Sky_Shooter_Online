@@ -1,7 +1,22 @@
-score:1543
+score:0
 screen:1280x720
-volume:70
+volume:50
 fps:60
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

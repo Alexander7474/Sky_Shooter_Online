@@ -18,6 +18,7 @@ class Cargo(pygame.sprite.Sprite):
         self.machine_gun = Cargo_machine_gun(self)
 
     def respawn(self):
+        """respawn le cargo"""
         self.image = pygame.image.load("assets/cargo/cargo_1.png")
         self.image = pygame.transform.scale(self.image,((474/1280)*self.screen_x,(184/720)*self.screen_y))
         self.rect.y = -100
@@ -26,8 +27,9 @@ class Cargo(pygame.sprite.Sprite):
         self.game.player.add_score(self.life//2)
 
     def draw(self,screen,player):
-        screen.blit(self.image,self.rect)
         """dessine le cargo"""
+        screen.blit(self.image,self.rect)
+        pygame.draw.rect(screen, (0,255,0), pygame.Rect(self.rect.x, self.rect.y+((200/720)*self.screen_y), ((self.life/2)/1280)*self.screen_x, (10/720)*self.screen_y))
         if self.life > 0:
             self.machine_gun.draw(screen,self,player)
             if self.direction == "down":   self.rect.y += 1

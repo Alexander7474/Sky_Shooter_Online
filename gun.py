@@ -77,6 +77,7 @@ class Machine_gun(pygame.sprite.Sprite):
         self.rect.x = player.rect.x
         self.rect.y = player.rect.y
         self.sound = pygame.mixer.Sound("assets/song_effect/gunshot/bullet_shot.mp3")
+        self.sound.set_volume(int(open('config.txt', "r").read().split("\n")[2].split(':')[1])/100)
         self.time = 0
 
     def fire(self):
@@ -120,6 +121,8 @@ class Cargo_machine_gun(pygame.sprite.Sprite):
         self.time = 0
         self.brrrt1 = pygame.mixer.Sound("assets/song_effect/gunshot/brrrt1.mp3")
         self.brrrt2 = pygame.mixer.Sound("assets/song_effect/gunshot/brrrt2.mp3")
+        self.brrrt1.set_volume(int(open('config.txt', "r").read().split("\n")[2].split(':')[1])/100)
+        self.brrrt2.set_volume(int(open('config.txt', "r").read().split("\n")[2].split(':')[1])/100)
 
     def draw_projectiles(self,screen):
         """dessine les projectiles des guns cargo"""

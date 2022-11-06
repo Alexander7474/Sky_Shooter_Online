@@ -54,22 +54,19 @@ class Player(pygame.sprite.Sprite):
         screen.blit(self.image,self.rect)
         self.draw_projectile(screen)
 
-    def hud(self,game,screen,clock):
-        text_life = self.font.render(str("Life:" + str(self.life)), False, (255, 255, 255))
-        screen.blit(text_life, (0,self.screen_y-20))
-        text_score = self.font.render(str("Score:" + str(self.score)), False, (255, 255, 255))
-        screen.blit(text_score, (self.screen_x-200,self.screen_y-20))
+    def hud(self,screen,clock):
+        pygame.draw.rect(screen, (0,255,0), pygame.Rect(10, self.screen_y-20, ((self.life)/1280)*self.screen_x, 10))
+        text_score = self.font.render(str(str(self.score)), False, (255, 255, 255))
+        screen.blit(text_score, (self.screen_x-200,self.screen_y-40))
         if self.rocket_launcher.get_timer() == 0:
-            pygame.draw.circle(screen,(0,255,0),(10,self.screen_y-40), 10, 0)
+            pygame.draw.circle(screen,(0,255,0),(20,self.screen_y-40), 10, 0)
         else:
             if self.rocket_launcher.get_timer() <= 255:
-                pygame.draw.circle(screen,(255,self.rocket_launcher.get_timer(),0),(10,self.screen_y-40), 10, 0)
+                pygame.draw.circle(screen,(255,self.rocket_launcher.get_timer(),0),(20,self.screen_y-40), 10, 0)
             else:
                 self.rocket_launcher.rearms()
         text_fps = self.font.render(str(round(clock.get_fps(),1)), False,(255,255,255))
         screen.blit(text_fps,(0,0))
-        text_cargo_life = self.font.render("Cargo life:"+str(game.cargo.get_life()), False, (255,255,255))
-        screen.blit(text_cargo_life,(self.screen_x-200,self.screen_y-40))
 
     def get_life(self):
         return self.life

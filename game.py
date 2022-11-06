@@ -15,7 +15,8 @@ class Game:
         self.all_enemy = pygame.sprite.Group()
         self.all_effect = pygame.sprite.Group()
         self.pressed = {}
-        self.sound = pygame.mixer.Sound("assets/song_effect/explosion/explosion.mp3")
+        self.explosion_sound = pygame.mixer.Sound("assets/song_effect/explosion/explosion.mp3")
+        self.explosion_sound.set_volume(int(open('config.txt', "r").read().split("\n")[2].split(':')[1])/100)
 
     def spawn_enemy(self,r):
         if randint(0,r) == 1 and len(self.all_enemy) < 11:
@@ -23,7 +24,7 @@ class Game:
 
     def explosion(self,x,y):
         self.all_effect.add(Explosion(self,x,y))
-        self.sound.play()
+        self.explosion_sound.play()
 
     def remove_effect(self,eff):
         self.all_effect.remove(eff)
@@ -84,7 +85,7 @@ class Game:
         self.spawn_cloud(75)
 
         #update du joueur
-        self.player.hud(self,screen,clock)
+        self.player.hud(screen,clock)
         self.player.draw(screen)
 
         #update du cargo
@@ -153,7 +154,7 @@ class Game_Online(Game):
             enemy.move(self.player)
 
         #update du joueur
-        self.player.hud(self,screen,clock)
+        self.player.hud(screen,clock)
         self.player.draw(screen)
 
         #update des objets des autres joueurs
