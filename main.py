@@ -3,6 +3,7 @@ from random import randint
 from game import *
 import socket
 import json
+import sys
 
 #pygame init
 pygame.init()
@@ -71,7 +72,7 @@ def main_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if online_addr_select:
                     if event.key == pygame.K_RETURN:
@@ -93,7 +94,7 @@ def main_menu():
                     if selected == 2:
                         running = False;option_menu()
                     if selected == 3:
-                        exit()
+                        sys.exit(1)
                 if event.key == pygame.K_UP:
                     if selected > 0: selected-=1
                     else: selected = len(list_button)-1
@@ -140,7 +141,7 @@ def option_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     if selected == 4:
@@ -204,7 +205,7 @@ def touches_menu():
         screen.blit(mgun_text, ((SCREEN_X-mgun_text.get_width())//2,SCREEN_Y//1.6))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False;option_menu()
@@ -255,7 +256,7 @@ def solo_game():
         #gestion des events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit(1)
             #detection des touches
             elif event.type == pygame.KEYDOWN:
                 game.pressed[event.key] = True
@@ -340,7 +341,7 @@ def online_game(addr):
         #gestion des events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit(1)
             #detection des touches
             elif event.type == pygame.KEYDOWN:
                 game.pressed[event.key] = True

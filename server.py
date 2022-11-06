@@ -1,11 +1,9 @@
 import pygame
 import socket
-from player import Player
-from enemy import Enemy
 from effects import *
-from cargo import Cargo
 import json
 from random import randint
+import sys
 
 pygame.init()
 
@@ -21,7 +19,7 @@ while type(number_client) != int:
     except:
         print("Entrer un entier")
 if number_client == 0 or number_client == 1:
-    exit()
+    sys.exit(1)
 print('En attente de la connexion des clients')
 dict_client = {}
 
@@ -43,10 +41,10 @@ for i in range(number_client):
         print("client n"+str(i)+" a pris connaissance de son matricule")
       else:
         print("erreur code invalide avec le client n"+str(i))
-        exit()
+        sys.exit(1)
     except:
         print("erreur avec le client n"+str(i)+" lors de la prise de matricule")
-        exit()
+        sys.exit(1)
 
 dict_game_se = json.dumps(dict_game)
 for i in range(number_client):
@@ -54,7 +52,7 @@ for i in range(number_client):
           dict_client['client'+str(i)].send(dict_game_se.encode())
       except:
           print('le client n'+str(i)+' ne répond pas')
-          exit()
+          sys.exit(1)
 
 running = True
 while running:
@@ -66,7 +64,7 @@ while running:
         new_dict_game = json.loads(dict_client['client'+str(i)].recv(1024).decode())
     except:
         print('impossible de récupérer les données joueur avec le client n'+str(i))
-        exit()
+        sys.exit(1)
     dict_game['players']['player'+str(i)] = new_dict_game['players']['player'+str(i)]
     damage_cargo += dict_game['cargo_life']-new_dict_game['cargo_life']
   dict_game['cargo_life'] -= damage_cargo
@@ -82,4 +80,4 @@ while running:
           dict_client['client'+str(i)].send(dict_game_se.encode())
       except:
           print('le client n'+str(i)+' ne répond plus')
-          exit()
+          sys.exit(1)
