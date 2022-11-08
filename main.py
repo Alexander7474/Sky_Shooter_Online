@@ -215,12 +215,10 @@ def touches_menu():
 def end_game(game):
     """fonction de fin jeu qui modifie les scores"""
     game.clear_effect()
-    cinematic = End_game(game.cargo)
+    cinematic = End_game()
     finish = False
     while not finish:
-        screen.fill((0,0,0))
-        screen.blit(bg,(0,0))
-        finish = cinematic.draw(screen,game.cargo)
+        finish = cinematic.draw(screen,game.player,game.cargo,bg)
         pygame.display.update()
         #block the fps to 60
         clock.tick(FPS)
