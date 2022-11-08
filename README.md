@@ -4,7 +4,7 @@ Projet de jeu NSI
 
 Encore en cours de dev:
 
-version actuelle: 1.0.2
+version actuelle: 1.0.3
 
 prochaine version:
 -plusieurs environnements de jeu

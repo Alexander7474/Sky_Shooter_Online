@@ -1,4 +1,5 @@
 import pygame
+from cinematic import End_game
 from random import randint
 from game import *
 import socket
@@ -214,11 +215,12 @@ def touches_menu():
 def end_game(game):
     """fonction de fin jeu qui modifie les scores"""
     game.clear_effect()
-    for i in range(500):
-        if randint(0,1) == 0: game.explosion(randint(0-50,SCREEN_X),randint(0-50,SCREEN_Y))
-        game.update_effect(screen)
-        text_title = my_font.render("Fin de Partie", False, (255, 255, 255))
-        screen.blit(text_title, ((SCREEN_X-text_title.get_width())/2,SCREEN_Y//2))
+    cinematic = End_game(game.cargo)
+    finish = False
+    while not finish:
+        screen.fill((0,0,0))
+        screen.blit(bg,(0,0))
+        finish = cinematic.draw(screen,game.cargo)
         pygame.display.update()
         #block the fps to 60
         clock.tick(FPS)
