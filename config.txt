@@ -1,7 +1,12 @@
-score:0
-screen:1280x720
+score:1386
+screen:960x540
 volume:50
 fps:60
+
+
+
+
+
 
 
 

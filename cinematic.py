@@ -19,33 +19,29 @@ class End_game:
         self.cam_trans_state = 0
 
     def draw(self,screen,player,cargo,bg):
-        screen.fill((0,0,0))
-        screen.blit(bg,(0,0))
         if self.state == "cam_trans":
             if self.cam_trans_state < self.screen_y//2:
-                for i in range(self.screen_x+1):
-                    for d in range(self.cam_trans_state*2):
-                        screen.set_at((i, self.screen_y+1-d), (0,0,0))
-                        screen.set_at((i, d), (0,0,0))
-                self.cam_trans_state +=1
+                screen.fill((0,0,0))
+                screen.blit(bg,(0,0))
+                pygame.draw.rect(screen,(0,0,0),pygame.Rect(0, self.screen_y-self.cam_trans_state, self.screen_x, self.screen_y//2))
+                pygame.draw.rect(screen,(0,0,0),pygame.Rect(0, -(self.screen_y//2)+self.cam_trans_state, self.screen_x, self.screen_y//2))
+                self.cam_trans_state +=4
             else:
-                self.state = "plane_crash"
-        elif self.state == "plane_crash":
-            cargo.rect.x+=1
-            player.rect.x+=1
-            player.rect.y+=1
-            screen.blit(player.image,player.rect)
-            screen.blit(cargo.image,cargo.rect)
-            if cargo.rect.x > self.screen_x and player.rect.y > self.screen_y:
                 self.state = "drop_the_bomb"
         elif self.state == "drop_the_bomb":
-            if self.time < 90:
-                self.image = self.image_list[self.time]
-            self.rect.y+=2
-            if self.time >self.exp_time:
-                self.state = "boum"
-            screen.blit(self.image,self.rect)
-            self.time+=1
+            screen.fill((0,0,0))
+            screen.blit(bg,(0,0))
+            if self.cam_trans_state < self.screen_y//3:
+                if self.time < 90:
+                    self.image = self.image_list[self.time]
+                self.rect.y+=2
+                if self.time >self.exp_time:
+                    self.state = "boum"
+                screen.blit(self.image,self.rect)
+                self.time+=1
+            pygame.draw.rect(screen,(0,0,0),pygame.Rect(0, self.screen_y-self.cam_trans_state, self.screen_x, self.screen_y//2))
+            pygame.draw.rect(screen,(0,0,0),pygame.Rect(0, -(self.screen_y//2)+self.cam_trans_state, self.screen_x, self.screen_y//2))
+            self.cam_trans_state -=4
         elif self.state == "boum":
             self.image = pygame.image.load('assets/cinematic/nuke.png')
             self.image = pygame.transform.scale(self.image,(self.screen_x,self.screen_y))
