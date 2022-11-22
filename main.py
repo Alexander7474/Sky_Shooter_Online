@@ -20,21 +20,29 @@ def config():
     global FPS
     global SOUND_VOLUME
     global SOLO_SCORE
+    global FULLSCREEN
     global screen
     global clock
     global bg
     global my_font
+    global joysticks
     file = open('config.txt', "r");CONFIG = file.read().split("\n");file.close()
     SCREEN_X = int(CONFIG[1].split(':')[1].split('x')[0])
     SCREEN_Y = int(CONFIG[1].split(':')[1].split('x')[1])
     FPS = int(CONFIG[3].split(':')[1])
     SOUND_VOLUME = int(CONFIG[2].split(':')[1])
     SOLO_SCORE = int(CONFIG[0].split(':')[1])
-    screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y))
+    FULLSCREEN = CONFIG[4].split(':')[1]
+    if FULLSCREEN=="on":screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y), pygame.FULLSCREEN)
+    else:screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y))
     clock = pygame.time.Clock()
     bg = pygame.image.load('assets/bg/bg.png')
     bg = pygame.transform.scale(bg,((3840/1280)*SCREEN_X,SCREEN_Y))
     my_font = pygame.font.SysFont('Comic Sans MS', 30)
+    try:
+        joysticks = pygame.joystick.Joystick(0);joysticks.init()
+    except:
+        print('pas de joystick connecté')
 
 def main_menu():
     """fonction qui affiche le menu principale"""
@@ -102,6 +110,13 @@ def main_menu():
                 if event.key == pygame.K_DOWN:
                     if selected < len(list_button)-1: selected+=1
                     else: selected = 0
+            if event.type == pygame.JOYHATMOTION:
+                if event.value == (0,1):
+                    if selected > 0: selected-=1
+                    else: selected = len(list_button)-1
+                if event.value == (0,-1):
+                    if selected < len(list_button)-1: selected+=1
+                    else: selected = 0
 
         pygame.display.update()
 
@@ -111,6 +126,7 @@ def option_menu():
     res = ["640x360","800x450","960x540","1024x576","1280x720","1366x768","1600x900","1920x1080","2048x1152","2560x1440","2880x1620","3200x1800","3840x2160"]
     volume = SOUND_VOLUME
     fps_limit = FPS
+    dofullscreen = FULLSCREEN
 
     selected = 0
     selected_res = 0
@@ -118,14 +134,15 @@ def option_menu():
         if res[i] == CONFIG[1].split(':')[1]:
             selected_res = i
 
-    text_button = ["Résolution: "+res[selected_res],"Volume: "+str(volume),"Fps limite: "+str(fps_limit),"Touches","Retour et appliquer"]
+    text_button = ["Résolution: "+res[selected_res],"Volume: "+str(volume),"Fps limite: "+str(fps_limit),"Fullscreen: "+dofullscreen,"Touches","Retour et appliquer"]
     list_button = []
     for i in range(len(text_button)): list_button.append(my_font.render(text_button[i], False, (0, 0, 0)))
     coo_button = [((SCREEN_X-list_button[0].get_width())//2,SCREEN_Y//2),
                 ((SCREEN_X-list_button[1].get_width())//2,SCREEN_Y//1.85),
                 ((SCREEN_X-list_button[2].get_width())//2,SCREEN_Y//1.7),
                 ((SCREEN_X-list_button[3].get_width())//2,SCREEN_Y//1.55),
-                ((SCREEN_X-list_button[4].get_width())//2,SCREEN_Y//1.40)]
+                ((SCREEN_X-list_button[4].get_width())//2,SCREEN_Y//1.40),
+                ((SCREEN_X-list_button[5].get_width())//2,SCREEN_Y//1.25)]
 
     running = True
     while running:
@@ -134,9 +151,7 @@ def option_menu():
         for i in range(len(list_button)):
             if i != selected: list_button[i] = my_font.render(text_button[i], False, (0, 0, 0))
             screen.blit(list_button[i], coo_button[i])
-        text_button[0] = "Résolution: "+res[selected_res]
-        text_button[1] = "Volume: "+str(volume)
-        text_button[2] = "Fps limite: "+str(fps_limit)
+        text_button = ["Résolution: "+res[selected_res],"Volume: "+str(volume),"Fps limite: "+str(fps_limit),"Fullscreen: "+dofullscreen,"Touches","Retour et appliquer"]
 
         screen.blit(title_text, ((SCREEN_X-title_text.get_width())//2,SCREEN_Y//3.1))
 
@@ -145,17 +160,18 @@ def option_menu():
                 sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    if selected == 4:
+                    if selected == 5:
                         file = open('config.txt','w')
                         CONFIG[1] = "screen:"+str(res[selected_res])
                         CONFIG[2] = "volume:"+str(volume)
                         CONFIG[3] = "fps:"+str(fps_limit)
+                        CONFIG[4] = "fullscreen:"+dofullscreen
                         new_config = ""
                         for co in CONFIG: new_config += co+"\n"
                         file.write(new_config)
                         file.close()
                         running = False;main_menu()
-                    if selected == 3:
+                    if selected == 4:
                         running = False;touches_menu()
                 if event.key == pygame.K_UP:
                     if selected > 0: selected-=1
@@ -173,6 +189,11 @@ def option_menu():
                     elif selected == 2:
                         if fps_limit > 15: fps_limit-=1
                         else: fps_limit = 120
+                    elif selected == 3:
+                        if dofullscreen == "on":
+                            dofullscreen = "off"
+                        else:
+                            dofullscreen = "on"
                 if event.key == pygame.K_RIGHT:
                     if selected == 0:
                         if selected_res < len(res)-1: selected_res+=1
@@ -183,6 +204,11 @@ def option_menu():
                     elif selected == 2:
                         if fps_limit < 120: fps_limit+=1
                         else: fps_limit = 15
+                    elif selected == 3:
+                        if dofullscreen == "on":
+                            dofullscreen = "off"
+                        else:
+                            dofullscreen = "on"
                 if event.key == pygame.K_ESCAPE:
                     running = False;main_menu()
 
