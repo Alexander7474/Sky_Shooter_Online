@@ -61,8 +61,8 @@ def main_menu():
 
     online_addr_select = False
     text = ''
-    len_box = 140
-    input_box = pygame.Rect((SCREEN_X-len_box)//2,SCREEN_Y//2,len_box,32)
+    len_box = 240
+    input_box = pygame.Rect((SCREEN_X-len_box)//2,SCREEN_Y//2,len_box,44)
 
     running = True
     while running:
